@@ -1,0 +1,101 @@
+1  import java.util.Calendar;
+2  
+3  // JAVA program for implementation of KMP pattern
+4  // searching algorithm
+5   
+6  class KMP_String_Matching
+7  {
+8      void KMPSearch(String pat, String txt)
+9      {
+10         int M = pat.length();
+11         int N = txt.length();
+12  
+13         // create lps[] that will hold the longest
+14         // prefix suffix values for pattern
+15         int lps[] = new int[M];
+16         int j = 0;  // index for pat[]
+17  
+18         // Preprocess the pattern (calculate lps[]
+19         // array)
+20         computeLPSArray(pat,M,lps);
+21  
+22         int i = 0;  // index for txt[]
+23         while (i < N)
+24         {
+25             if (pat.charAt(j) == txt.charAt(i))
+26             {
+27                 j++;
+28                 i++;
+29             }
+30             if (j == M)
+31             {
+32                 System.out.println("Found pattern "+
+33                               "at index " + (i–j));
+34                 j = lps[j–1];
+35             }
+36  
+37             // mismatch after j matches
+38             else if (i < N && pat.charAt(j) != txt.charAt(i))
+39             {
+40                 // Do not match lps[0..lps[j–1]] characters,
+41                 // they will match anyway
+42                 if (j != 0)
+43                     j = lps[j–1];
+44                 else
+45                     i = i+1;
+46             }
+47         }
+48     }
+49  
+50     void computeLPSArray(String pat, int M, int lps[])
+51     {
+52         // length of the previous longest prefix suffix
+53         int len = 0;
+54         int i = 1;
+55         lps[0] = 0;  // lps[0] is always 0
+56  
+57         // the loop calculates lps[i] for i = 1 to M–1
+58         while (i < M)
+59         {
+60             if (pat.charAt(i) == pat.charAt(len))
+61             {
+62                 len++;
+63                 lps[i] = len;
+64                 i++;
+65             }
+66             else  // (pat[i] != pat[len])
+67             {
+68                 // This is tricky. Consider the example.
+69                 // AAACAAAA and i = 7. The idea is similar 
+70                 // to search step.
+71                 if (len != 0)
+72                 {
+73                     len = lps[len–1];
+74  
+75                     // Also, note that we do not increment
+76                     // i here
+77                 }
+78                 else  // if (len == 0)
+79                 {
+80                     lps[i] = len;
+81                     i++;
+82                 }
+83             }
+84         }
+85     }
+86  
+87     // Driver program to test above function
+88     public static void main(String args[])
+89     {
+90      long start  = Calendar.getInstance().getTimeInMillis();
+91      
+92      String txt = "string here";
+93         String pat = "pattern here";
+94         new KMP_String_Matching().KMPSearch(pat,txt);
+95         
+96         long end = Calendar.getInstance().getTimeInMillis();
+97         end = end –start;
+98         System.out.println("KMP time–>"+end);
+99     }
+100}
+101
